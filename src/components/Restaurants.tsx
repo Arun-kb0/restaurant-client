@@ -7,7 +7,6 @@ export const restaurants: RestaurantType[] = [
     id: "1",
     name: "The Culinary Haven",
     address: {
-      street: "25 Gourmet Blvd",
       city: "Taste Town",
       state: "TX",
       pinCode: 75001,
@@ -19,7 +18,6 @@ export const restaurants: RestaurantType[] = [
     id: "2",
     name: "Skyline Bistro",
     address: {
-      street: "89 Skyline Drive",
       city: "Metro Heights",
       state: "CA",
       pinCode: 90001,
@@ -31,7 +29,6 @@ export const restaurants: RestaurantType[] = [
     id: "3",
     name: "Lakeview Cafe",
     address: {
-      street: "12 Lakeside Road",
       city: "Meadow Springs",
       state: "WA",
       pinCode: 98001,
@@ -43,7 +40,6 @@ export const restaurants: RestaurantType[] = [
     id: "4",
     name: "Urban Feast",
     address: {
-      street: "77 Downtown Lane",
       city: "Urban City",
       state: "NY",
       pinCode: 10005,

@@ -8,6 +8,8 @@ import { FaPhone } from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { RestaurantType } from "../constants/types";
 import { GrRestaurant } from "react-icons/gr";
+import CountryStateCitySelector from "./CountryStateCitySelector";
+import { useState } from "react";
 
 
 const formSchema = z.object({
@@ -16,9 +18,6 @@ const formSchema = z.object({
   phone: z
     .string()
     .regex(/^\d{10}$/, { message: "Phone number must be exactly 10 digits." }),
-  street: z.string().min(1, { message: "Street is required." }),
-  city: z.string().min(1, { message: "City is required." }),
-  state: z.string().min(1, { message: "State is required." }),
   pincode: z
     .string()
     .regex(/^\d{6}$/, { message: "Pincode must be exactly 6 digits." }),
@@ -32,6 +31,9 @@ type Props = {
 }
 
 const CreateForm = ({ isEdit, restaurant }: Props) => {
+  const [state, setState] = useState("")
+  const [city, setCity] = useState("")
+
   const {
     register,
     handleSubmit,
@@ -42,28 +44,36 @@ const CreateForm = ({ isEdit, restaurant }: Props) => {
       name: isEdit ? restaurant?.name : "",
       email: isEdit ? restaurant?.email : "",
       phone: isEdit ? restaurant?.phone : "",
-      street: isEdit ? restaurant?.address.street : "",
-      city: isEdit ? restaurant?.address.city : "",
-      state: isEdit ? restaurant?.address.state : "",
-      pincode: isEdit ? String(restaurant?.address.pinCode ) : "",
+      pincode: isEdit ? String(restaurant?.address.pinCode) : "",
     },
   });
 
-  function onSubmit(data: FormInputs) {
+  const onSubmit = (data: FormInputs) => {
+    console.log('onsubmit called ')
+    const updatedData = {
+      ...data,
+      state,
+      city
+    }
     if (isEdit) {
       console.log('restaurant edit call')
     } else {
       console.log('restaurant create call')
     }
-    console.log(data);
+    console.log('data')
+    console.log(updatedData);
   }
+
+  const getStateAndCountry = (state: string, city: string) => {
+    console.log("Final selection:", { state, city });
+    setState(state)
+    setCity(city)
+  };
+
 
   const nameError = errors.name?.message;
   const emailError = errors.email?.message;
   const phoneError = errors.phone?.message;
-  const streetError = errors.street?.message;
-  const cityError = errors.city?.message;
-  const stateError = errors.state?.message;
   const pincodeError = errors.pincode?.message;
 
   return (
@@ -92,33 +102,19 @@ const CreateForm = ({ isEdit, restaurant }: Props) => {
         {...register("phone")}
       />
       <TextField
-        type="street"
-        label="Street"
-        error={streetError}
-        icon={FaMapMarkerAlt}
-        {...register("street")}
-      />
-      <TextField
-        type="city"
-        label="City"
-        error={cityError}
-        icon={FaMapMarkerAlt}
-        {...register("city")}
-      />
-      <TextField
-        type="state"
-        label="State"
-        error={stateError}
-        icon={FaMapMarkerAlt}
-        {...register("state")}
-      />
-      <TextField
         type="pinCode"
         label="Pincode"
         error={pincodeError}
         icon={FaMapMarkerAlt}
         {...register("pincode")}
       />
+
+      {!isEdit &&
+        <CountryStateCitySelector
+          getStateAndCountry={getStateAndCountry}
+        />
+      }
+
       <Button type="submit" className="w-full">
         {isEdit ? 'Edit' : 'Create'}
       </Button>

@@ -21,7 +21,7 @@ const RestaurantCard = ({ restaurant }: Props) => {
         <Typography type="h4" className='text-center font-semibold capitalize ' >{restaurant.name}</Typography>
         <div>
           <Typography className="my-1 text-foreground font-semibold"> Address </Typography>
-          <Typography className="my-1 text-foreground"> {`${restaurant.address.street}, ${restaurant.address.city}, ${restaurant.address.state}, `}</Typography>
+          <Typography className="my-1 text-foreground"> {`${restaurant.address.city}, ${restaurant.address.state}, `}</Typography>
           <Typography className="my-1 text-foreground"> pincode : {restaurant.address.pinCode}</Typography>
         </div>
         <div>
