@@ -56,7 +56,7 @@ export default function UserNavbar() {
   }, []);
 
   return (
-    <section className="bg-black w-screen items-center justify-center p-2">
+    <section className="bg-black items-center justify-center p-2">
       <Navbar className="mx-auto w-full max-w-screen-xl bg-black dark:bg-surface-dark">
         <div className="flex items-center text-white">
           <Typography

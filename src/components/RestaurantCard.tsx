@@ -1,22 +1,26 @@
 import { Card, IconButton, Tooltip, Typography } from "@material-tailwind/react";
 import { RestaurantType } from "../constants/types";
 import { MdDelete, MdModeEdit } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   restaurant: RestaurantType
 }
 
 const RestaurantCard = ({ restaurant }: Props) => {
+  const navigate = useNavigate()
 
   const handleDelete = () => { }
-  const handleEdit = () => { }
+  const handleEdit = () => {
+    navigate('/edit', { state: restaurant })
+  }
 
   return (
-    <Card  className="max-w-xs">
+    <Card className="max-w-xs">
       <Card.Body>
         <Typography type="h4" className='text-center font-semibold capitalize ' >{restaurant.name}</Typography>
         <div>
-          <Typography  className="my-1 text-foreground font-semibold"> Address </Typography>
+          <Typography className="my-1 text-foreground font-semibold"> Address </Typography>
           <Typography className="my-1 text-foreground"> {`${restaurant.address.street}, ${restaurant.address.city}, ${restaurant.address.state}, `}</Typography>
           <Typography className="my-1 text-foreground"> pincode : {restaurant.address.pinCode}</Typography>
         </div>

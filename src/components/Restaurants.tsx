@@ -1,4 +1,5 @@
 import { RestaurantType } from "../constants/types";
+import PageTitle from "./PageTitle";
 import RestaurantCard from "./RestaurantCard"
 
 export const restaurants: RestaurantType[] = [
@@ -58,7 +59,8 @@ const Restaurants = () => {
   return (
     <section className="space-y-6">
 
-      <h1 className="text-center text-teal-400 text-3xl font-semibold py-4"> Restaurants </h1>\
+      <PageTitle title='Restaurants' />
+
 
       <div className="flex flex-wrap justify-center gap-2">
         {restaurants.map((restaurant) => (

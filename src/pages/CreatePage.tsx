@@ -1,11 +1,16 @@
-import React from 'react'
+import CreateForm from '../components/CreateForm'
+import PageTitle from '../components/PageTitle'
 
-type Props = {}
 
-const CreatePage = (props: Props) => {
+const CreatePage = () => {
   return (
-    <main className="bg-black min-h-screen w-screen">
-      create page
+    <main className="bg-black min-h-screen flex justify-center items-center">
+
+      <div>
+        <PageTitle title='add new restaurant' />
+        <CreateForm isEdit={false} />
+      </div>
+
     </main>
   )
 }
