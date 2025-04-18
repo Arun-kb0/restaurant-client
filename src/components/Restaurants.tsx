@@ -1,71 +1,111 @@
 import { useEffect, useState } from "react";
-import { RestaurantType } from "../constants/types";
 import PageTitle from "./PageTitle";
 import RestaurantCard from "./RestaurantCard"
 import { axiosInstance } from "../config/axiosInstance";
 import errorHandler from "../util/errorHandler";
+import { useRestaurants } from "../context/RestaurantContext";
+import { Spinner } from "@material-tailwind/react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 
 const Restaurants = () => {
-  const [restaurants, setRestaurants] = useState<RestaurantType[]>([])
-  const [page, setPage] = useState(1)
-  const [numberOfPages, setNumberOfPages] = useState(1)
+  const { state: { restaurants, page, numberOfPages }, dispatch } = useRestaurants()
+  const [isLoading, setIsLoading] = useState(false)
+  const [_, setHasMore] = useState<boolean>(() => page <= numberOfPages)
 
   useEffect(() => {
+    console.log('page one call')
+    if (restaurants.length !== 0) return
+
     (async () => {
       try {
+        setIsLoading(true)
         const res = await axiosInstance.get('/', {
           params: {
             page,
             numberOfPages
           }
         })
-        setRestaurants(res.data.restaurants)
-        setPage(res.data.currentPage)
-        setNumberOfPages(res.data.numberOfPages)
+        dispatch({ type: 'SET', payload: res.data })
+        setIsLoading(false)
       } catch (error) {
         errorHandler(error)
       }
     })()
   }, [])
 
+  const loadMore = async () => {
+    console.log('triggered !!!! ')
+    if (isLoading && page > numberOfPages) return
+    try {
+      setIsLoading(true)
+      const res = await axiosInstance.get('/', {
+        params: {
+          page: page + 1,
+          numberOfPages
+        }
+      })
+      dispatch({ type: 'SET', payload: res.data })
+      setIsLoading(false)
+    } catch (error) {
+      errorHandler(error)
+      setIsLoading(false)
+    }
+  }
+
   useEffect(() => {
-    if (page > numberOfPages) return
-    (async () => {
-      try {
-        const res = await axiosInstance.get('/', {
-          params: {
-            page: page + 1,
-            numberOfPages
-          }
-        })
-        console.log(res.data)
-        setRestaurants(res.data.restaurants)
-        setPage(res.data.currentPage)
-        setNumberOfPages(res.data.numberOfPages)
-      } catch (error) {
-        errorHandler(error)
-      }
-    })()
-  }, [page])
-
-
+    setHasMore(page <= numberOfPages)
+  }, [page, numberOfPages])
 
   return (
-    <section className="space-y-6">
+    // <>
+    //   <PageTitle title='Restaurants' />
+    //   <InfiniteScroll
+    //     className='flex flex-wrap justify-center gap-2'
+    //     scrollableTarget='home'
+    //     dataLength={restaurants.length}
+    //     next={loadMore}
+    //     hasMore={hasMore}
+    //     loader={isLoading &&
+    //       <div className='w-full h-40 flex justify-center items-center'>
+    //         <Spinner />
+    //       </div>
+    //     }
+    //     height={window.innerHeight - 240}
+    //   >
+    //     {restaurants.map((restaurant) => (
+    //       <RestaurantCard
+    //         key={restaurant.id}
+    //         restaurant={restaurant}
+    //       />
+    //     ))}
+    //   </InfiniteScroll>
 
-      <PageTitle title='Restaurants' />
+    // </>
 
-      <div className="flex flex-wrap justify-center gap-2">
-        {restaurants?.map((restaurant) => (
-          <RestaurantCard
-            key={restaurant.id}
-            restaurant={restaurant}
-          />
+    <>
+      <PageTitle title="Restaurants" />
+      <InfiniteScroll
+        scrollableTarget="home"
+        dataLength={restaurants.length}
+        next={loadMore}
+        hasMore={true}
+        loader={
+          isLoading && (
+            <div className="w-full h-40 flex justify-center items-center">
+              <Spinner />
+            </div>
+          )
+        }
+        className="flex flex-wrap justify-center gap-2"
+      >
+        {restaurants.map((restaurant) => (
+          <RestaurantCard key={restaurant.id} restaurant={restaurant} />
         ))}
-      </div>
+      </InfiniteScroll>
 
-    </section>
+    </>
+
   )
 }
 

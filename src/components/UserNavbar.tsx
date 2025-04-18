@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  Button,
   IconButton,
   Typography,
   Collapse,
@@ -56,8 +55,7 @@ export default function UserNavbar() {
   }, []);
 
   return (
-    <section className="bg-black items-center justify-center p-2">
-      <Navbar className="mx-auto w-full max-w-screen-xl bg-black dark:bg-surface-dark">
+      <Navbar className="sticky bg-black shadow-lg border-gray-500 top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
         <div className="flex items-center text-white">
           <Typography
             as="a"
@@ -86,15 +84,7 @@ export default function UserNavbar() {
         </div>
         <Collapse open={openNav}>
           <NavList />
-          <Button
-            size="sm"
-            isFullWidth
-            className="mt-4 border-white bg-white text-black hover:border-white hover:bg-white hover:text-black"
-          >
-            Sign In
-          </Button>
         </Collapse>
-      </Navbar>
-    </section>
-  );
+      </Navbar >
+  )
 }

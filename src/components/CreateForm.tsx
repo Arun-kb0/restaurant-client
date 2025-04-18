@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@material-tailwind/react";
+import { Button, Spinner } from "@material-tailwind/react";
 import TextField from "./TextField";
 import { IoMail } from "react-icons/io5";
 import { FaPhone } from "react-icons/fa6";
@@ -11,8 +11,9 @@ import { GrRestaurant } from "react-icons/gr";
 import CountryStateCitySelector from "./CountryStateCitySelector";
 import { useState } from "react";
 import { axiosInstance } from "../config/axiosInstance";
-import { useNavigate } from "react-router-dom";
 import errorHandler from "../util/errorHandler";
+import { toast } from "react-toastify";
+import { useRestaurants } from "../context/RestaurantContext";
 
 
 const formSchema = z.object({
@@ -34,14 +35,16 @@ type Props = {
 }
 
 const CreateForm = ({ isEdit, restaurant }: Props) => {
-  const navigate = useNavigate()
   const [state, setState] = useState("")
   const [city, setCity] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const { dispatch } = useRestaurants()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm<FormInputs>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,6 +57,11 @@ const CreateForm = ({ isEdit, restaurant }: Props) => {
 
   const onSubmit = async (data: FormInputs) => {
     console.log('onsubmit called ')
+    if (!isEdit && (state === '' || city === '')) {
+      toast.error('State and city are required')
+      return
+    }
+    setIsLoading(true)
     const updatedData: Partial<RestaurantType> = {
       id: restaurant?.id,
       name: data.name,
@@ -66,18 +74,23 @@ const CreateForm = ({ isEdit, restaurant }: Props) => {
       email: data.email
     }
     try {
+      let res
       if (isEdit) {
         if (!restaurant?.id) return
         console.log('restaurant edit call')
-        const res = await axiosInstance.patch(`/${restaurant.id}`, { restaurant: updatedData })
-        console.log(res.data)
+        res = await axiosInstance.patch(`/${restaurant.id}`, { restaurant: updatedData })
+        toast('Restaurant updated.')
       } else {
         console.log('restaurant create call')
-        const res = await axiosInstance.post('/', { restaurant: updatedData })
-        console.log(res.data)
+        res = await axiosInstance.post('/', { restaurant: updatedData })
+        reset()
+        toast('New Restaurant created.')
       }
-      navigate('/')
+      console.log(res.data)
+      dispatch({ type: 'ADD', payload: res.data })
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
       errorHandler(error)
     }
   }
@@ -93,6 +106,8 @@ const CreateForm = ({ isEdit, restaurant }: Props) => {
   const emailError = errors.email?.message;
   const phoneError = errors.phone?.message;
   const pincodeError = errors.pincode?.message;
+
+  if (isLoading) return (<div className="w-full h-screen flex justify-center max-w-md p-3" > <Spinner /> </div>)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-3">

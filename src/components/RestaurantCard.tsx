@@ -4,6 +4,7 @@ import { MdDelete, MdModeEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../config/axiosInstance";
 import errorHandler from "../util/errorHandler";
+import { useRestaurants } from "../context/RestaurantContext";
 
 type Props = {
   restaurant: RestaurantType
@@ -11,11 +12,12 @@ type Props = {
 
 const RestaurantCard = ({ restaurant }: Props) => {
   const navigate = useNavigate()
+  const { dispatch } = useRestaurants()
 
   const handleDelete = async () => {
     try {
-      const data = await axiosInstance.delete(`/${restaurant.id}`)
-      console.log(data)
+      const res = await axiosInstance.delete(`/${restaurant.id}`)
+      dispatch({ type: 'DELETE', payload: { restaurantId: res.data.id } })
     } catch (error) {
       errorHandler(error)
     }
@@ -26,7 +28,7 @@ const RestaurantCard = ({ restaurant }: Props) => {
   }
 
   return (
-    <Card className="max-w-xs">
+    <Card className="max-w-xs max-h-72">
       <Card.Body>
         <Typography type="h4" className='text-center font-semibold capitalize ' >{restaurant.name}</Typography>
         <div>

@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+    #home {
+      height: calc(100vh - 240px);
+      /* Adjust based on your layout */
+      overflow-y: auto;
+      position: relative;
+    }
+}
