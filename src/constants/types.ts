@@ -4,7 +4,7 @@ export type RestaurantType = {
   address: {
     city: string
     state: string
-    pinCode: number
+    pinCode: string
   }
   phone: string;
   email: string;

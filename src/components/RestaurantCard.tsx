@@ -2,6 +2,8 @@ import { Card, IconButton, Tooltip, Typography } from "@material-tailwind/react"
 import { RestaurantType } from "../constants/types";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../config/axiosInstance";
+import errorHandler from "../util/errorHandler";
 
 type Props = {
   restaurant: RestaurantType
@@ -10,7 +12,15 @@ type Props = {
 const RestaurantCard = ({ restaurant }: Props) => {
   const navigate = useNavigate()
 
-  const handleDelete = () => { }
+  const handleDelete = async () => {
+    try {
+      const data = await axiosInstance.delete(`/${restaurant.id}`)
+      console.log(data)
+    } catch (error) {
+      errorHandler(error)
+    }
+  }
+
   const handleEdit = () => {
     navigate('/edit', { state: restaurant })
   }

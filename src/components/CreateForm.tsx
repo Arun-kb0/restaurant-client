@@ -10,6 +10,9 @@ import { RestaurantType } from "../constants/types";
 import { GrRestaurant } from "react-icons/gr";
 import CountryStateCitySelector from "./CountryStateCitySelector";
 import { useState } from "react";
+import { axiosInstance } from "../config/axiosInstance";
+import { useNavigate } from "react-router-dom";
+import errorHandler from "../util/errorHandler";
 
 
 const formSchema = z.object({
@@ -31,6 +34,7 @@ type Props = {
 }
 
 const CreateForm = ({ isEdit, restaurant }: Props) => {
+  const navigate = useNavigate()
   const [state, setState] = useState("")
   const [city, setCity] = useState("")
 
@@ -48,20 +52,34 @@ const CreateForm = ({ isEdit, restaurant }: Props) => {
     },
   });
 
-  const onSubmit = (data: FormInputs) => {
+  const onSubmit = async (data: FormInputs) => {
     console.log('onsubmit called ')
-    const updatedData = {
-      ...data,
-      state,
-      city
+    const updatedData: Partial<RestaurantType> = {
+      id: restaurant?.id,
+      name: data.name,
+      address: {
+        city: city,
+        state: state,
+        pinCode: data.pincode
+      },
+      phone: data.phone,
+      email: data.email
     }
-    if (isEdit) {
-      console.log('restaurant edit call')
-    } else {
-      console.log('restaurant create call')
+    try {
+      if (isEdit) {
+        if (!restaurant?.id) return
+        console.log('restaurant edit call')
+        const res = await axiosInstance.patch(`/${restaurant.id}`, { restaurant: updatedData })
+        console.log(res.data)
+      } else {
+        console.log('restaurant create call')
+        const res = await axiosInstance.post('/', { restaurant: updatedData })
+        console.log(res.data)
+      }
+      navigate('/')
+    } catch (error) {
+      errorHandler(error)
     }
-    console.log('data')
-    console.log(updatedData);
   }
 
   const getStateAndCountry = (state: string, city: string) => {
